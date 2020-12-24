@@ -20,7 +20,7 @@ public class TimeManager
     }
     public delegate string MyArgumentDelegate(string S);
 
-   
+
 
 
     List<DelegateTimer> delegateTimerList;
@@ -30,24 +30,25 @@ public class TimeManager
     }
     public void Refresh()
     {
-        for (int i = delegateTimerList.Count-1; i >= 0; i--)
+        for (int i = delegateTimerList.Count - 1; i >= 0; i--)
         {
-            if (delegateTimerList[i].timeToInvoke<=Time.time)
+            if (delegateTimerList[i].timeToInvoke <= Time.time)
             {
-                for (int j = 0; j < delegateTimerList[i].repeat; j++)
+                //for (int j = 1; j < delegateTimerList[i].repeat-1; j++)
+                //{
+                try
                 {
-                    try
-                    {
-                        delegateTimerList[i].delegateToInvoke();
-                    }
-                    catch (System.Exception)
-                    {
-
-                        Debug.LogError("Exception Thrown");
-                    }
-                   
+                    // delegateTimerList[i].timeToInvoke = delegateTimerList[i].timeToInvoke * j;
+                    delegateTimerList[i].delegateToInvoke();
                 }
-                
+                catch (System.Exception)
+                {
+
+                    Debug.LogError("Exception Thrown");
+                }
+
+                //  }
+
                 delegateTimerList.RemoveAt(i);
             }
         }
@@ -58,14 +59,18 @@ public class TimeManager
     }
 
 
-    public void AddDelegate(MyDelegate del,float time,int repeat)
+    public void AddDelegate(MyDelegate del, float time, int repeat)
     {
-        DelegateTimer toADD = new DelegateTimer(Time.time + time, del,repeat);
-        delegateTimerList.Add(toADD);
-       
+        for (int i = 1; i <= repeat; i++)
+        {
+            DelegateTimer toADD = new DelegateTimer(Time.time + (time * i), del);
+            delegateTimerList.Add(toADD);
+        }
+
+
     }
 
-    public void AddArgumentDeleGate(MyArgumentDelegate arg,float time)
+    public void AddArgumentDeleGate(MyArgumentDelegate arg, float time)
     {
         DelegateTimer toadd = new DelegateTimer(time + Time.time, arg);
         delegateTimerList.Add(toadd);
@@ -75,11 +80,11 @@ public class TimeManager
 
     private class DelegateTimer
     {
-       public float timeToInvoke;
-       public   MyDelegate delegateToInvoke;
-       public MyArgumentDelegate MyArgumentDelegate;
-       public int repeat;
-        public DelegateTimer(float timeOfInvo,MyDelegate del)
+        public float timeToInvoke;
+        public MyDelegate delegateToInvoke;
+        public MyArgumentDelegate MyArgumentDelegate;
+        public int repeat;
+        public DelegateTimer(float timeOfInvo, MyDelegate del)
         {
             this.timeToInvoke = timeOfInvo;
             this.delegateToInvoke = del;
@@ -90,7 +95,7 @@ public class TimeManager
             this.timeToInvoke = timeOfInvo;
             this.MyArgumentDelegate = myArgumentDelegate;
         }
-        public DelegateTimer(float timeOfInvo,MyDelegate del,int repeat)
+        public DelegateTimer(float timeOfInvo, MyDelegate del, int repeat)
         {
             this.timeToInvoke = timeOfInvo;
             this.delegateToInvoke = del;
